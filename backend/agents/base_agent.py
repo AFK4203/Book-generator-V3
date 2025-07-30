@@ -1,10 +1,9 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, Optional, List, Union
 import asyncio
 import logging
 from datetime import datetime
-from mistralai.async_client import MistralAsyncClient
-from mistralai.models.chat_completion import ChatMessage
+from mistralai import Mistral, UserMessage, SystemMessage, AssistantMessage
 import os
 
 logging.basicConfig(level=logging.INFO)
@@ -15,7 +14,7 @@ class BaseAgent(ABC):
     
     def __init__(self, agent_name: str):
         self.agent_name = agent_name
-        self.client = MistralAsyncClient(api_key=os.getenv("MISTRAL_API_KEY"))
+        self.client = Mistral(api_key=os.getenv("MISTRAL_API_KEY"))
         self.model = os.getenv("MISTRAL_MODEL", "mistral-large-latest")
         self.max_retries = 3
         self.status = "ready"
@@ -31,7 +30,7 @@ class BaseAgent(ABC):
         logger.info(f"{self.agent_name}: {status} - {message} ({progress}%)")
         
     async def call_mistral(self, 
-                          messages: List[ChatMessage], 
+                          messages: List[Union[UserMessage, SystemMessage, AssistantMessage]], 
                           temperature: float = 0.7,
                           max_tokens: Optional[int] = None) -> str:
         """Make a call to Mistral API with retry logic"""
@@ -40,7 +39,7 @@ class BaseAgent(ABC):
             try:
                 await self.update_status("working", message=f"Calling Mistral API (attempt {attempt + 1})")
                 
-                response = await self.client.chat(
+                response = await self.client.chat_async(
                     model=self.model,
                     messages=messages,
                     temperature=temperature,
