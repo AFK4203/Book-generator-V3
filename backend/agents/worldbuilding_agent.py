@@ -1,5 +1,5 @@
 from typing import Dict, Any, List
-from mistralai.models.chat_completion import ChatMessage
+from mistralai import SystemMessage, UserMessage
 from .base_agent import BaseAgent
 import logging
 
@@ -150,8 +150,8 @@ Create a comprehensive consistency framework that addresses:
 Provide your analysis in structured JSON format."""
         
         messages = [
-            ChatMessage(role="system", content=system_prompt),
-            ChatMessage(role="user", content=user_prompt)
+            SystemMessage(content=system_prompt),
+            UserMessage(content=user_prompt)
         ]
         
         response = await self.call_mistral(messages, temperature=0.4)
@@ -243,8 +243,8 @@ Create a detailed World Bible that will serve as the authoritative reference for
 Make this comprehensive and usable for story generation."""
         
         messages = [
-            ChatMessage(role="system", content=system_prompt),
-            ChatMessage(role="user", content=user_prompt)
+            SystemMessage(content=system_prompt),
+            UserMessage(content=user_prompt)
         ]
         
         response = await self.call_mistral(messages, temperature=0.6, max_tokens=4000)
@@ -312,8 +312,8 @@ Create specific, actionable integration elements:
 Make this practical for generating {story_data.get('total_chapters', 10)} chapters."""
         
         messages = [
-            ChatMessage(role="system", content=system_prompt),
-            ChatMessage(role="user", content=user_prompt)
+            SystemMessage(content=system_prompt),
+            UserMessage(content=user_prompt)
         ]
         
         response = await self.call_mistral(messages, temperature=0.7)
