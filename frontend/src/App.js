@@ -1525,33 +1525,71 @@ const StoryGeneratorApp = () => {
 
         {/* Right Content Area */}
         <div className="flex-1 bg-gradient-to-br from-gray-900 via-black to-gray-800 p-8 flex items-center justify-center">
-          <div className="text-center max-w-2xl">
-            <div className="w-full max-w-lg mx-auto bg-gradient-to-br from-gray-800 to-gray-900 border-4 border-dashed border-gray-600 rounded-3xl flex items-center justify-center mb-8 shadow-2xl" style={{height: '400px'}}>
-              <div className="text-gray-400 text-center">
-                <div className="text-8xl mb-6 animate-pulse">📖</div>
-                <p className="text-2xl mb-4 font-bold text-white">Your Book Preview</p>
-                <p className="text-lg text-gray-300">
-                  Complete the forms and click "Generate Complete Story Book" to begin.
-                </p>
-                <div className="mt-6 text-sm text-gray-500">
-                  AI-powered • Multi-agent system • Professional quality
+          <div className="text-center max-w-2xl w-full">
+            {previewChapters.length > 0 ? (
+              /* Story Preview */
+              <div className="w-full">
+                <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+                  📖 Story Preview
+                </h2>
+                <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl p-6 border-2 border-blue-500/30 shadow-2xl max-h-96 overflow-y-auto">
+                  {previewChapters.slice(0, 3).map((chapter, index) => (
+                    <div key={index} className="mb-6 p-4 bg-gray-700/50 rounded-lg">
+                      <h3 className="text-xl font-bold text-blue-300 mb-2">
+                        Chapter {chapter.chapter_number}: {chapter.title}
+                      </h3>
+                      <p className="text-gray-300 text-sm leading-relaxed">
+                        {chapter.content.substring(0, 200)}...
+                      </p>
+                      <div className="mt-2 text-xs text-gray-400">
+                        {chapter.word_count} words
+                      </div>
+                    </div>
+                  ))}
+                  {previewChapters.length > 3 && (
+                    <div className="text-center text-gray-400 text-sm">
+                      ... and {previewChapters.length - 3} more chapters
+                    </div>
+                  )}
+                </div>
+                <div className="mt-4 text-sm text-gray-400">
+                  Total: {previewChapters.length} chapters, {previewChapters.reduce((sum, ch) => sum + ch.word_count, 0).toLocaleString()} words
                 </div>
               </div>
-            </div>
-            
-            {/* Stats Display */}
-            <div className="grid grid-cols-2 gap-6">
-              <div className="bg-gradient-to-br from-blue-900/40 to-blue-700/40 p-6 rounded-2xl border border-blue-500/30 shadow-xl">
-                <div className="text-blue-400 font-bold text-lg mb-2">📚 Chapters</div>
-                <div className="text-4xl font-bold text-white">{storyData.totalChapters.toLocaleString()}</div>
-                <div className="text-blue-300 text-sm mt-1">Total chapters to generate</div>
+            ) : (
+              /* Default Preview Area */
+              <div>
+                <div className="w-full max-w-lg mx-auto bg-gradient-to-br from-gray-800 to-gray-900 border-4 border-dashed border-gray-600 rounded-3xl flex items-center justify-center mb-8 shadow-2xl" style={{height: '400px'}}>
+                  <div className="text-gray-400 text-center">
+                    <div className="text-8xl mb-6 animate-pulse">📖</div>
+                    <p className="text-2xl mb-4 font-bold text-white">Your Book Preview</p>
+                    <p className="text-lg text-gray-300">
+                      {isGenerating ? 
+                        `${currentPhase}... ${Math.round(generationProgress)}%` :
+                        "Complete the forms and click 'Generate Complete Story Book' to begin."
+                      }
+                    </p>
+                    <div className="mt-6 text-sm text-gray-500">
+                      AI-powered • Multi-agent system • Professional quality
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Stats Display */}
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="bg-gradient-to-br from-blue-900/40 to-blue-700/40 p-6 rounded-2xl border border-blue-500/30 shadow-xl">
+                    <div className="text-blue-400 font-bold text-lg mb-2">📚 Chapters</div>
+                    <div className="text-4xl font-bold text-white">{storyData.totalChapters.toLocaleString()}</div>
+                    <div className="text-blue-300 text-sm mt-1">Total chapters to generate</div>
+                  </div>
+                  <div className="bg-gradient-to-br from-green-900/40 to-green-700/40 p-6 rounded-2xl border border-green-500/30 shadow-xl">
+                    <div className="text-green-400 font-bold text-lg mb-2">📝 Words/Chapter</div>
+                    <div className="text-4xl font-bold text-white">{storyData.minWordsPerChapter.toLocaleString()}</div>
+                    <div className="text-green-300 text-sm mt-1">Minimum words per chapter</div>
+                  </div>
+                </div>
               </div>
-              <div className="bg-gradient-to-br from-green-900/40 to-green-700/40 p-6 rounded-2xl border border-green-500/30 shadow-xl">
-                <div className="text-green-400 font-bold text-lg mb-2">📝 Words/Chapter</div>
-                <div className="text-4xl font-bold text-white">{storyData.minWordsPerChapter.toLocaleString()}</div>
-                <div className="text-green-300 text-sm mt-1">Minimum words per chapter</div>
-              </div>
-            </div>
+            )}
 
             {/* Estimated word count */}
             <div className="mt-6 p-4 bg-purple-900/20 rounded-lg border border-purple-500/30">
