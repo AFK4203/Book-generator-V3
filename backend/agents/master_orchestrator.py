@@ -1,5 +1,5 @@
 from typing import Dict, Any, List
-from mistralai.models.chat_completion import ChatMessage
+from mistralai import SystemMessage, UserMessage
 from .base_agent import BaseAgent
 import asyncio
 import logging
@@ -71,8 +71,8 @@ Additional Details:
 Provide your analysis in JSON format with specific recommendations."""
         
         messages = [
-            ChatMessage(role="system", content=system_prompt),
-            ChatMessage(role="user", content=user_prompt)
+            SystemMessage(content=system_prompt),
+            UserMessage(content=user_prompt)
         ]
         
         response = await self.call_mistral(messages, temperature=0.3)
@@ -236,8 +236,8 @@ Provide your analysis in JSON format with specific recommendations."""
 Provide a detailed validation report with specific recommendations for improvements."""
         
         messages = [
-            ChatMessage(role="system", content=system_prompt),
-            ChatMessage(role="user", content=user_prompt)
+            SystemMessage(content=system_prompt),
+            UserMessage(content=user_prompt)
         ]
         
         response = await self.call_mistral(messages, temperature=0.2)
