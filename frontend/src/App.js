@@ -1446,9 +1446,60 @@ const StoryGeneratorApp = () => {
 
                 {/* Generate Button */}
                 <div className="text-center">
-                  <button className="w-full py-6 px-8 bg-gradient-to-r from-green-500 via-blue-600 to-purple-600 hover:from-green-600 hover:via-blue-700 hover:to-purple-700 rounded-2xl text-white font-bold text-2xl transition-all duration-300 transform hover:scale-105 shadow-2xl border-2 border-white/20">
-                    ✨ Generate Complete Story Book ✨
+                  <button 
+                    onClick={startStoryGeneration}
+                    disabled={isGenerating}
+                    className={`w-full py-6 px-8 rounded-2xl text-white font-bold text-2xl transition-all duration-300 transform shadow-2xl border-2 border-white/20 ${
+                      isGenerating 
+                        ? 'bg-gray-600 cursor-not-allowed' 
+                        : 'bg-gradient-to-r from-green-500 via-blue-600 to-purple-600 hover:from-green-600 hover:via-blue-700 hover:to-purple-700 hover:scale-105'
+                    }`}
+                  >
+                    {isGenerating ? (
+                      <span className="flex items-center justify-center space-x-3">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+                        <span>✨ Generating Story... {Math.round(generationProgress)}% ✨</span>
+                      </span>
+                    ) : (
+                      "✨ Generate Complete Story Book ✨"
+                    )}
                   </button>
+
+                  {/* Generation Progress */}
+                  {isGenerating && (
+                    <div className="mt-6 p-4 bg-gray-800 rounded-lg border border-blue-500/30">
+                      <div className="mb-3">
+                        <div className="flex justify-between text-sm text-gray-300 mb-1">
+                          <span>Progress</span>
+                          <span>{Math.round(generationProgress)}%</span>
+                        </div>
+                        <div className="w-full bg-gray-700 rounded-full h-2">
+                          <div 
+                            className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
+                            style={{ width: `${generationProgress}%` }}
+                          ></div>
+                        </div>
+                      </div>
+                      <p className="text-blue-300 text-center font-medium">
+                        {currentPhase}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Download Button */}
+                  {downloadReady && (
+                    <div className="mt-6">
+                      <button
+                        onClick={downloadStory}
+                        className="w-full py-4 px-6 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded-xl text-white font-bold text-xl transition-all duration-300 transform hover:scale-105 shadow-xl"
+                      >
+                        📄 Download KDP-Ready Story (.docx)
+                      </button>
+                      <p className="text-green-400 text-sm mt-2">
+                        Your professional book is ready for Amazon KDP!
+                      </p>
+                    </div>
+                  )}
 
                   <div className="mt-6 text-center text-gray-300">
                     <div className="grid grid-cols-3 gap-4 mt-4">
