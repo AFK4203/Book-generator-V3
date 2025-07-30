@@ -357,6 +357,15 @@ const StoryGeneratorApp = () => {
     minWordsPerChapter: 900
   });
 
+  // Generation state variables
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [generationProgress, setGenerationProgress] = useState(0);
+  const [currentPhase, setCurrentPhase] = useState('');
+  const [sessionId, setSessionId] = useState(null);
+  const [agentStatuses, setAgentStatuses] = useState([]);
+  const [downloadReady, setDownloadReady] = useState(false);
+  const [previewChapters, setPreviewChapters] = useState([]);
+
   // Options arrays
   const characterArchetypes = [
     'The Mentor', 'The Rival', 'The Wild Card', 'The Innocent', 'The Traitor',
