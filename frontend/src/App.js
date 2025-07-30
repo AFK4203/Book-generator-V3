@@ -1403,24 +1403,47 @@ const StoryGeneratorApp = () => {
                   </h3>
                   <div className="grid grid-cols-1 gap-4">
                     {[
-                      { name: 'Master Orchestrator', icon: '🎯', status: 'Ready', color: 'blue' },
-                      { name: 'Worldbuilding Agent', icon: '🌍', status: 'Ready', color: 'green' },
-                      { name: 'Character Agent', icon: '👥', status: 'Ready', color: 'purple' },
-                      { name: 'Plot Agent', icon: '📚', status: 'Ready', color: 'yellow' },
-                      { name: 'Story Generator Agent', icon: '✍️', status: 'Ready', color: 'red' },
-                      { name: 'Sequential Checker Agent', icon: '🔍', status: 'Ready', color: 'pink' },
-                      { name: 'Document Formatter Agent', icon: '📄', status: 'Ready', color: 'indigo' }
-                    ].map((agent, index) => (
-                      <div key={index} className="flex items-center justify-between p-4 bg-gray-700 rounded-lg border border-gray-600">
-                        <div className="flex items-center space-x-3">
-                          <span className="text-2xl">{agent.icon}</span>
-                          <span className="text-white font-medium">{agent.name}</span>
+                      { name: 'Master Orchestrator', icon: '🎯', key: 'master_orchestrator' },
+                      { name: 'Worldbuilding Agent', icon: '🌍', key: 'worldbuilding' },
+                      { name: 'Character Agent', icon: '👥', key: 'character' },
+                      { name: 'Plot Agent', icon: '📚', key: 'plot' },
+                      { name: 'Story Generator Agent', icon: '✍️', key: 'story_generator' },
+                      { name: 'Sequential Checker Agent', icon: '🔍', key: 'sequential_checker' },
+                      { name: 'Document Formatter Agent', icon: '📄', key: 'document_formatter' }
+                    ].map((agent, index) => {
+                      const agentStatus = agentStatuses.find(a => a.agent_name === agent.name) || { status: 'ready', progress: 0, message: '' };
+                      const statusColor = agentStatus.status === 'completed' ? 'green' : 
+                                         agentStatus.status === 'working' ? 'blue' : 
+                                         agentStatus.status === 'error' ? 'red' : 'gray';
+                      
+                      return (
+                        <div key={index} className="flex items-center justify-between p-4 bg-gray-700 rounded-lg border border-gray-600">
+                          <div className="flex items-center space-x-3">
+                            <span className="text-2xl">{agent.icon}</span>
+                            <div>
+                              <span className="text-white font-medium">{agent.name}</span>
+                              {agentStatus.message && (
+                                <div className="text-xs text-gray-400 mt-1">{agentStatus.message}</div>
+                              )}
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            {agentStatus.status === 'working' && agentStatus.progress > 0 && (
+                              <span className="text-xs text-blue-300">{Math.round(agentStatus.progress)}%</span>
+                            )}
+                            <span className={`px-3 py-1 rounded-full text-sm font-medium text-white ${
+                              statusColor === 'green' ? 'bg-green-600' :
+                              statusColor === 'blue' ? 'bg-blue-600' :
+                              statusColor === 'red' ? 'bg-red-600' : 'bg-gray-600'
+                            }`}>
+                              {agentStatus.status === 'working' ? 'Working' :
+                               agentStatus.status === 'completed' ? 'Complete' :
+                               agentStatus.status === 'error' ? 'Error' : 'Ready'}
+                            </span>
+                          </div>
                         </div>
-                        <span className={`px-3 py-1 rounded-full text-sm font-medium bg-${agent.color}-600 text-white`}>
-                          {agent.status}
-                        </span>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
