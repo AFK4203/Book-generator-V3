@@ -366,6 +366,81 @@ const StoryGeneratorApp = () => {
   const [downloadReady, setDownloadReady] = useState(false);
   const [previewChapters, setPreviewChapters] = useState([]);
 
+  // Generation Functions
+  const startStoryGeneration = async () => {
+    try {
+      setIsGenerating(true);
+      setGenerationProgress(0);
+      setCurrentPhase('Starting generation...');
+      
+      const response = await axios.post(`${API}/story/generate`, {
+        story_data: storyData
+      });
+      
+      const newSessionId = response.data.session_id;
+      setSessionId(newSessionId);
+      
+      // Start polling for progress
+      pollGenerationProgress(newSessionId);
+      
+    } catch (error) {
+      console.error('Failed to start story generation:', error);
+      setIsGenerating(false);
+      setCurrentPhase('Generation failed');
+    }
+  };
+
+  const pollGenerationProgress = async (sessionId) => {
+    try {
+      const response = await axios.get(`${API}/story/${sessionId}/progress`);
+      const progressData = response.data;
+      
+      setGenerationProgress(progressData.progress);
+      setCurrentPhase(progressData.current_phase);
+      setAgentStatuses(progressData.agent_statuses || []);
+      
+      if (progressData.current_phase === 'completed') {
+        setIsGenerating(false);
+        setDownloadReady(true);
+        loadStoryPreview(sessionId);
+      } else if (progressData.current_phase === 'error') {
+        setIsGenerating(false);
+        setCurrentPhase(`Error: ${progressData.error_message}`);
+      } else {
+        // Continue polling
+        setTimeout(() => pollGenerationProgress(sessionId), 2000);
+      }
+    } catch (error) {
+      console.error('Failed to get progress:', error);
+      setTimeout(() => pollGenerationProgress(sessionId), 5000);
+    }
+  };
+
+  const loadStoryPreview = async (sessionId) => {
+    try {
+      const response = await axios.get(`${API}/story/${sessionId}/preview`);
+      setPreviewChapters(response.data.chapters || []);
+    } catch (error) {
+      console.error('Failed to load preview:', error);
+    }
+  };
+
+  const downloadStory = async () => {
+    if (!sessionId) return;
+    
+    try {
+      const response = await axios.get(`${API}/story/${sessionId}/download`, {
+        responseType: 'json'
+      });
+      
+      // Open download URL in new tab
+      window.open(`${API}/story/${sessionId}/file`, '_blank');
+      
+    } catch (error) {
+      console.error('Failed to download story:', error);
+    }
+  };
+
   // Options arrays
   const characterArchetypes = [
     'The Mentor', 'The Rival', 'The Wild Card', 'The Innocent', 'The Traitor',
